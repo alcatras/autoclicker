@@ -12,16 +12,17 @@
 #include <linux/uinput.h>
 #include <sys/syslog.h>
 
-static const char* UINPUT_DIRS[] = {"/dev/uinput", "dev/input/uinput", "dev/misc/uinput"};
+static const char *UINPUT_DIRS[] = {"/dev/uinput", "dev/input/uinput", "dev/misc/uinput"};
 
 class VirtualDevice {
 public:
     ~VirtualDevice() {
-        if(fileDescriptor > 0)
+        if (fileDescriptor > 0)
             destroy();
     }
 
     virtual bool create() = 0;
+
     virtual bool destroy() { return true; };
 
 protected:
@@ -29,7 +30,9 @@ protected:
     struct input_event inputEvent;
 
     bool _eioctl(int status);
+
     bool _ewrite(ssize_t status);
+
     bool _eclose(int status);
 
     bool sendEvent(__u16 type, __u16 code, __s32 value);

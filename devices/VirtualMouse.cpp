@@ -96,7 +96,7 @@ bool VirtualMouse::move(int x, int y) {
         status = status && sendEvent(EV_REL, REL_Y, y);
     }
 
-    if(status) {
+    if (status) {
         sendEvent(EV_SYN, SYN_REPORT, 0);
     }
     return status;

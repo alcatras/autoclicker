@@ -12,12 +12,17 @@ public:
     VirtualMouse(int xrel, int yrel);
 
     bool create() override;
+
     bool destroy() override;
 
     bool move(int x, int y);
+
     bool setPosition(int x, int y);
+
     bool click(__u16 button);
+
     bool press(__u16 button);
+
     bool release(__u16 button);
 
 private:
