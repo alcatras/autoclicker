@@ -16,6 +16,7 @@ void ArgParser::show_help() {
         endl << "\t\t" << current_argument.help_text << endl << "\t\tusage: " << current_argument.short_name << " " <<
         current_argument.argt << endl;
     }
+    cout.flush();
 }
 
 void ArgParser::parse(int argc, const char **argv) {
@@ -43,14 +44,22 @@ void ArgParser::parse(int argc, const char **argv) {
     evaluate(current_option, current_data);
 }
 
-bool ArgParser::evaluate(string option, vector<string> data) {
+void ArgParser::evaluate(string option, vector<string> data) {
     for (int i = 0; i < this->options.size(); ++i) {
         struct option current_option = this->options[i];
 
         if (option.compare(current_option.short_name) == 0 || option.compare(current_option.verbose_name) == 0) {
-            current_option.callback(data);
-            return true;
+            if(!current_option.callback(data)) {
+                cout << "Option <" << option << "> with arguments: [ ";
+                for(int i = 0; i < data.size(); ++i) {
+                    cout << data[i] << " ";
+                }
+                cout << "] failed." << endl;
+                exit(EXIT_FAILURE);
+            }
         }
     }
-    return false;
+    cout << "Cannot find given option: " << option << endl;
+    show_help();
+    exit(EXIT_FAILURE);
 }

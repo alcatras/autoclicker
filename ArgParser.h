@@ -49,7 +49,7 @@ private:
     string command_name;
     string base_usage;
 
-    bool evaluate(string option, vector<string> data);
+    void evaluate(string option, vector<string> data);
 };
 
 
