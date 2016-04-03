@@ -6,12 +6,23 @@
 #include <iostream>
 #include "ArgParser.h"
 
-void ArgParser::show_help() {
-    cout << "========================================" << endl << this->name << endl << "usage: " <<
-    this->command_name << " " << this->base_usage << endl << "========================================" << endl << endl;
+void ArgParser::addOption(string short_name, string verbose_name, string help_text, string argt,
+                          function<bool(vector<string>)> callback) {
+    struct option opt;
+    opt.short_name = short_name;
+    opt.verbose_name = verbose_name;
+    opt.help_text = help_text;
+    opt.argt = argt;
+    opt.callback = callback;
+    options.push_back(opt);
+}
 
-    for (int i = 0; i < this->options.size(); ++i) {
-        struct option current_argument = this->options[i];
+void ArgParser::show_help() {
+    cout << "========================================" << endl << name << endl << "usage: " <<
+    command_name << " " << base_usage << endl << "========================================" << endl << endl;
+
+    for (int i = 0; i < options.size(); ++i) {
+        struct option current_argument = options[i];
         cout << "option:" << endl << "\t-" << current_argument.short_name << ", --" << current_argument.verbose_name <<
         endl << "\t\t" << current_argument.help_text << endl << "\t\tusage: " << current_argument.short_name << " " <<
         current_argument.argt << endl;
@@ -45,13 +56,13 @@ void ArgParser::parse(int argc, const char **argv) {
 }
 
 void ArgParser::evaluate(string option, vector<string> data) {
-    for (int i = 0; i < this->options.size(); ++i) {
-        struct option current_option = this->options[i];
+    for (int i = 0; i < options.size(); ++i) {
+        struct option current_option = options[i];
 
         if (option.compare(current_option.short_name) == 0 || option.compare(current_option.verbose_name) == 0) {
-            if(!current_option.callback(data)) {
+            if (!current_option.callback(data)) {
                 cout << "Option <" << option << "> with arguments: [ ";
-                for(int i = 0; i < data.size(); ++i) {
+                for (int i = 0; i < data.size(); ++i) {
                     cout << data[i] << " ";
                 }
                 cout << "] failed." << endl;
@@ -59,7 +70,7 @@ void ArgParser::evaluate(string option, vector<string> data) {
             }
         }
     }
-    cout << "Cannot find given option: " << option << endl;
+    cout << "!> Cannot find given option: " << option << endl;
     show_help();
     exit(EXIT_FAILURE);
 }

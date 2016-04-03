@@ -6,6 +6,8 @@
 #define AUTOCLICKER_COMMANDEXECUTOR_H
 
 #include <string>
+#include <functional>
+#include <vector>
 
 using namespace std;
 
@@ -13,9 +15,19 @@ class CommandExecutor {
 public:
     struct command {
         string name;
+        function<bool(vector<string> data)> callback;
     };
-private:
 
+    CommandExecutor() : commands() { }
+
+    void addCommand(struct command &cmd);
+
+    void addCommand(string name, function<bool(vector<string>)> callback);
+
+    bool runCommand(string &line);
+
+private:
+    vector<struct command> commands;
 };
 
 

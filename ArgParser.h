@@ -18,14 +18,17 @@ public:
         string verbose_name;
         string help_text;
         string argt;
-        std::function<bool(vector<string>)> callback;
+        function<bool(vector<string>)> callback;
     };
 
     ArgParser() : options() { }
 
-    void addArgument(struct option argument) {
+    void addOption(struct option &argument) {
         options.push_back(argument);
     }
+
+    void addOption(string short_name, string verbose_name, string help_text, string argt,
+                   function<bool(vector<string>)> callback);
 
     void setName(string summary) {
         this->name = summary;

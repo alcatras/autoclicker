@@ -16,7 +16,7 @@ static const char *UINPUT_DIRS[] = {"/dev/uinput", "dev/input/uinput", "dev/misc
 
 class VirtualDevice {
 public:
-    ~VirtualDevice() {
+    ~VirtualDevice() : delay(100000) {
         if (fileDescriptor > 0)
             destroy();
     }
@@ -25,9 +25,15 @@ public:
 
     virtual bool destroy() { return true; };
 
+    void setDelay(__useconds_t delay) {
+        this->delay = delay;
+    }
+
 protected:
     int fileDescriptor;
     struct input_event inputEvent;
+
+    __useconds_t delay;
 
     bool _eioctl(int status);
 
