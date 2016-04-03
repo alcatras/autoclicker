@@ -29,7 +29,7 @@ bool VirtualDevice::_eclose(int status) {
     return true;
 }
 
-bool VirtualDevice::sendEvent(__u16 type, __u16 code, __s32 value) {
+bool VirtualDevice::sendEvent(__u16 type, __u16 code, __s32 value, long delay) {
     if (fileDescriptor < 0) {
         perror("Can't send event from uninitialized device.");
         return false;
@@ -46,6 +46,9 @@ bool VirtualDevice::sendEvent(__u16 type, __u16 code, __s32 value) {
         return false;
     }
 
-    usleep(delay);
+    if(delay == -1)
+        usleep(default_delay);
+    else
+        usleep((__useconds_t)delay);
     return true;
 }

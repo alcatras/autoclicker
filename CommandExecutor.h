@@ -14,20 +14,28 @@ using namespace std;
 class CommandExecutor {
 public:
     struct command {
+        ulong id;
         string name;
         function<bool(vector<string> data)> callback;
     };
 
-    CommandExecutor() : commands() { }
+    CommandExecutor() : template_commands(), execution_commands() { }
 
     void addCommand(struct command &cmd);
 
     void addCommand(string name, function<bool(vector<string>)> callback);
 
-    bool runCommand(string &line);
+    bool parseCommand(string line);
+
+    void run();
 
 private:
-    vector<struct command> commands;
+    struct execution_command {
+        ulong id;
+        vector<string> data;
+    };
+    vector<struct command> template_commands;
+    vector<struct execution_command> execution_commands;
 };
 
 

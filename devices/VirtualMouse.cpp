@@ -87,44 +87,44 @@ bool VirtualMouse::destroy() {
     return _eclose(close(fileDescriptor));
 }
 
-bool VirtualMouse::move(int x, int y) {
+bool VirtualMouse::move(int x, int y, long delay) {
     bool status = true;
     if (x != 0) {
-        status = status && sendEvent(EV_REL, REL_X, x);
+        status = status && sendEvent(EV_REL, REL_X, x, delay);
     }
     if (y != 0 && status) {
-        status = status && sendEvent(EV_REL, REL_Y, y);
+        status = status && sendEvent(EV_REL, REL_Y, y, delay);
     }
 
     if (status) {
-        sendEvent(EV_SYN, SYN_REPORT, 0);
+        sendEvent(EV_SYN, SYN_REPORT, 0, delay);
     }
     return status;
 }
 
-bool VirtualMouse::click(__u16 button) {
-    return sendEvent(EV_KEY, button, 1) &&
-           sendEvent(EV_KEY, button, 0) &&
-           sendEvent(EV_SYN, SYN_REPORT, 0);
+bool VirtualMouse::click(__u16 button, long delay) {
+    return sendEvent(EV_KEY, button, 1, delay) &&
+           sendEvent(EV_KEY, button, 0, delay) &&
+           sendEvent(EV_SYN, SYN_REPORT, 0, delay);
 }
 
-bool VirtualMouse::press(__u16 button) {
-    return sendEvent(EV_KEY, button, 1) &&
-           sendEvent(EV_SYN, SYN_REPORT, 0);
+bool VirtualMouse::press(__u16 button, long delay) {
+    return sendEvent(EV_KEY, button, 1, delay) &&
+           sendEvent(EV_SYN, SYN_REPORT, 0, delay);
 }
 
-bool VirtualMouse::release(__u16 button) {
-    return sendEvent(EV_KEY, button, 0) &&
-           sendEvent(EV_SYN, SYN_REPORT, 0);
+bool VirtualMouse::release(__u16 button, long delay) {
+    return sendEvent(EV_KEY, button, 0, delay) &&
+           sendEvent(EV_SYN, SYN_REPORT, 0, delay);
 }
 
-bool VirtualMouse::setPosition(int x, int y) {
+bool VirtualMouse::setPosition(int x, int y, long delay) {
     x = max(x, 0);
     x = min(x, yres - 1);
     y = max(y, 0);
     y = min(y, yres - 1);
 
-    return sendEvent(EV_ABS, ABS_X, x) &&
-           sendEvent(EV_ABS, ABS_Y, y) &&
-           sendEvent(EV_SYN, SYN_REPORT, 0);
+    return sendEvent(EV_ABS, ABS_X, x, delay) &&
+           sendEvent(EV_ABS, ABS_Y, y, delay) &&
+           sendEvent(EV_SYN, SYN_REPORT, 0, delay);
 }

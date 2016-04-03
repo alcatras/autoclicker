@@ -15,15 +15,15 @@ public:
 
     bool destroy() override;
 
-    bool move(int x, int y);
+    bool move(int x, int y, long delay = -1);
 
-    bool setPosition(int x, int y);
+    bool setPosition(int x, int y, long delay = -1);
 
-    bool click(__u16 button);
+    bool click(__u16 button, long delay = -1);
 
-    bool press(__u16 button);
+    bool press(__u16 button, long delay = -1);
 
-    bool release(__u16 button);
+    bool release(__u16 button, long delay = -1);
 
 private:
     int xres;

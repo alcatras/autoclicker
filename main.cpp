@@ -25,6 +25,10 @@ public:
         argParser.parse(argc, argv);
     }
 
+    void run() {
+        commandExecutor.run();
+    }
+
     void setup_options(string appName) {
         argParser.setName("Mouse emulator.");
         argParser.setCommandName(appName);
@@ -54,7 +58,7 @@ public:
                         if (file.is_open()) {
                             cout << "> Reading file: " << data[i] << endl;
                             while (std::getline(file, line)) {
-                                if (!commandExecutor.runCommand(line)) {
+                                if (!commandExecutor.parseCommand(line)) {
                                     cout << "!> Error parsing command: " << line << endl;
                                     exit(EXIT_FAILURE);
                                 }
@@ -72,12 +76,12 @@ public:
         argParser.addOption(
                 "c",
                 "command",
-                "Executes commands.",
-                "[command1] [command2] ...",
+                "Executes command.",
+                "[command1] [arguments1]",
                 [&](vector<string> data) -> bool {
                     for (int i = 0; i < data.size(); ++i) {
-                        if (!commandExecutor.runCommand(data[i])) {
-                            cout << "!> Error parsing command: " << data[i];
+                        if (!commandExecutor.parseCommand(data[i])) {
+                            cout << "!> Error parsing command: " << data[i] << endl;
                             exit(EXIT_FAILURE);
                         }
                     }
@@ -98,27 +102,54 @@ public:
  *  mouse_move   [x] [y] [delay = default_delay]
  *  mouse_scroll [amount] [delay = default_delay]
  */
-
     void setup_executor() {
         commandExecutor.addCommand(
                 "set_delay",
                 [&](vector<string> data) -> bool {
-                    __useconds_t delay;
+                    long delay = -1;
                     if (data.size() >= 2) {
-                        delay = atol(data[1]);
+                        delay = atol(data[1].c_str());
                         if (delay == 0) {
-                            cout << "!> Invalid argument [" << data[1] << "] in function <set_delay>.";
-                            exit(EXIT_SUCCESS);
+                            cout << "!> Invalid argument [" << data[1] << "] in function <set_delay>." << endl;
+                            return false;
                         }
                     }
 
                     if (data.size() >= 1) {
                         if (data[0].compare("mouse") == 0) {
+                            cout << "Setting default delay to " << delay << "us." << endl;
                             virtualMouse.setDelay(delay);
                             return true;
                         }
                     }
                     return false;
+                }
+        );
+
+        commandExecutor.addCommand(
+                "mouse_left",
+                [&] (vector<string> data) -> bool {
+                    uint count = 1;
+                    long delay = -1;
+                    if(data.size() >= 2) {
+                        delay = atol (data[1].c_str());
+                        if(delay == 0) {
+                            cout << "!> Cannot parse [" << data[1] << "] as valid integer." << endl;
+                            return false;
+                        }
+                    }
+                    if(data.size() >= 1) {
+                        count = (uint) atoi(data[0].c_str());
+                        if(count == 0) {
+                            cout << "!> Cannot parse [" << data[0] << "] as valid integer." << endl;
+                            return false;
+                        }
+                    }
+                    for(int i = 0; i < count; ++i) {
+                        virtualMouse.click(BTN_LEFT, delay);
+                        cout << "Performing left click." << endl;
+                    }
+                    return true;
                 }
         );
     }
@@ -141,6 +172,7 @@ int main(int argc, const char **argv) {
     cout << "> Initializing virtual devices." << endl;
     mainClass.create();
 
+    mainClass.run();
 
     cout << "> Destroying virtual devices." << endl;
     mainClass.destroy();

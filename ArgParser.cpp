@@ -62,12 +62,13 @@ void ArgParser::evaluate(string option, vector<string> data) {
         if (option.compare(current_option.short_name) == 0 || option.compare(current_option.verbose_name) == 0) {
             if (!current_option.callback(data)) {
                 cout << "Option <" << option << "> with arguments: [ ";
-                for (int i = 0; i < data.size(); ++i) {
-                    cout << data[i] << " ";
+                for (int j = 0; j < data.size(); ++j) {
+                    cout << data[j] << " ";
                 }
                 cout << "] failed." << endl;
                 exit(EXIT_FAILURE);
             }
+            return;
         }
     }
     cout << "!> Cannot find given option: " << option << endl;
