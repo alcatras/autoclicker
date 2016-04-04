@@ -2,11 +2,11 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
-#include "ArgParser.h"
-#include "devices/VirtualMouse.h"
-#include "CommandExecutor.h"
-#include "utils.h"
-#include "commands.h"
+#include "cli/ArgParser.h"
+#include "core/dev/VirtualMouse.h"
+#include "core/CommandExecutor.h"
+#include "core/utils.h"
+#include "core/commands.h"
 
 using namespace std;
 

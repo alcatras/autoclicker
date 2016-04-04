@@ -16,7 +16,7 @@ static const char *UINPUT_DIRS[] = {"/dev/uinput", "dev/input/uinput", "dev/misc
 
 class VirtualDevice {
 public:
-    VirtualDevice() : default_delay(100000) {}
+    VirtualDevice() : default_delay(100000) { }
 
     ~VirtualDevice() {
         if (fileDescriptor > 0)
@@ -28,8 +28,8 @@ public:
     virtual bool destroy() { return true; };
 
     void setDelay(long delay) {
-        if(delay > 0)
-            default_delay = (__useconds_t)delay;
+        if (delay > 0)
+            default_delay = (__useconds_t) delay;
     }
 
 protected:

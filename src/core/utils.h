@@ -1,4 +1,3 @@
-
 #ifndef AUTOCLICKER_UTILS_H
 #define AUTOCLICKER_UTILS_H
 
@@ -23,7 +22,6 @@ int getRootWindowInfo(string grep) {
         ss >> temp >> width;
         return width;
     }
-
     pclose(fp);
 
     return -1;

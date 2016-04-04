@@ -4,7 +4,6 @@
 
 #include <string.h>
 #include "VirtualMouse.h"
-#include "utils.h"
 
 VirtualMouse::VirtualMouse(int xres, int yres) : xres(xres), yres(yres) {
 }

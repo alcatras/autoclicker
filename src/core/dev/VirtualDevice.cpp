@@ -46,9 +46,9 @@ bool VirtualDevice::sendEvent(__u16 type, __u16 code, __s32 value, long delay) {
         return false;
     }
 
-    if(delay == -1)
+    if (delay == -1)
         usleep(default_delay);
     else
-        usleep((__useconds_t)delay);
+        usleep((__useconds_t) delay);
     return true;
 }
