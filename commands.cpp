@@ -58,7 +58,12 @@ bool mouse_click(vector<string> data, VirtualMouse& virtualMouse, __uint16_t but
     }
     for(int i = 0; i < count; ++i) {
         virtualMouse.click(button, delay);
-        cout << "Performing mouse click. Button " << button << '.' << endl;
+        string btn;
+        if(button == BTN_LEFT)        btn = "left";
+        else if(button == BTN_RIGHT)  btn = "right";
+        else if(button == BTN_MIDDLE) btn = "middle";
+        else                          btn = "unknown";
+        cout << "Performing mouse click with " << btn << " button." << endl;
     }
     return true;
 }

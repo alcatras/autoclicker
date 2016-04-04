@@ -62,7 +62,7 @@ public:
                                 stringstream ss(line);
                                 vector<string> _data;
                                 string tmp;
-                                while(!ss.eof()) {
+                                while (!ss.eof()) {
                                     ss >> tmp;
                                     _data.push_back(tmp);
                                 }
@@ -87,12 +87,11 @@ public:
                 "Executes command.",
                 "[command1] [arguments1]",
                 [&](vector<string> data) -> bool {
-                    for (int i = 0; i < data.size(); ++i) {
-                        if (!commandExecutor.parseCommand(data)) {
-                            cout << "!> Error parsing command: " << data[i] << endl;
-                            exit(EXIT_FAILURE);
-                        }
+                    if (!commandExecutor.parseCommand(data)) {
+                        cout << "!> Error parsing command: " << data[0] << endl;
+                        exit(EXIT_FAILURE);
                     }
+
                     return true;
                 }
         );
@@ -120,31 +119,31 @@ public:
         );
         commandExecutor.addCommand(
                 "mouse_left",
-                [&] (vector<string> data) -> bool {
+                [&](vector<string> data) -> bool {
                     return mouse_click(data, virtualMouse, BTN_LEFT);
                 }
         );
         commandExecutor.addCommand(
                 "mouse_right",
-                [&] (vector<string> data) -> bool {
+                [&](vector<string> data) -> bool {
                     return mouse_click(data, virtualMouse, BTN_RIGHT);
                 }
         );
         commandExecutor.addCommand(
                 "mouse_middle",
-                [&] (vector<string> data) -> bool {
+                [&](vector<string> data) -> bool {
                     return mouse_click(data, virtualMouse, BTN_MIDDLE);
                 }
         );
         commandExecutor.addCommand(
                 "mouse_move",
-                [&] (vector<string> data) -> bool {
+                [&](vector<string> data) -> bool {
                     return mouse_move(data, virtualMouse);
                 }
         );
         commandExecutor.addCommand(
-                "scroll",
-                [&] (vector<string> data) -> bool {
+                "mouse_scroll",
+                [&](vector<string> data) -> bool {
                     return mouse_scroll(data, virtualMouse);
                 }
         );
