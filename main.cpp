@@ -6,6 +6,7 @@
 #include "devices/VirtualMouse.h"
 #include "CommandExecutor.h"
 #include "utils.h"
+#include "commands.h"
 
 using namespace std;
 
@@ -57,8 +58,15 @@ public:
                         file.open(data[i]);
                         if (file.is_open()) {
                             cout << "> Reading file: " << data[i] << endl;
-                            while (std::getline(file, line)) {
-                                if (!commandExecutor.parseCommand(line)) {
+                            while (getline(file, line)) {
+                                stringstream ss(line);
+                                vector<string> _data;
+                                string tmp;
+                                while(!ss.eof()) {
+                                    ss >> tmp;
+                                    _data.push_back(tmp);
+                                }
+                                if (!commandExecutor.parseCommand(_data)) {
                                     cout << "!> Error parsing command: " << line << endl;
                                     exit(EXIT_FAILURE);
                                 }
@@ -80,7 +88,7 @@ public:
                 "[command1] [arguments1]",
                 [&](vector<string> data) -> bool {
                     for (int i = 0; i < data.size(); ++i) {
-                        if (!commandExecutor.parseCommand(data[i])) {
+                        if (!commandExecutor.parseCommand(data)) {
                             cout << "!> Error parsing command: " << data[i] << endl;
                             exit(EXIT_FAILURE);
                         }
@@ -95,61 +103,49 @@ public:
  *  set_delay [device] [default_delay]
  *
  * mouse commands:
- *  mouse_left   [count = 1] [delay = default_delay]
- *  mouse_right  [count = 1] [delay = default_delay]
- *  mouse_middle [count = 1] [delay = default_delay]
+ *  mouse_left   [count = 1]  [delay = default_delay]
+ *  mouse_right  [count = 1]  [delay = default_delay]
+ *  mouse_middle [count = 1]  [delay = default_delay]
  *
- *  mouse_move   [x] [y] [delay = default_delay]
+ *  mouse_move   [x] [y]  [delay = default_delay]
  *  mouse_scroll [amount] [delay = default_delay]
  */
     void setup_executor() {
         commandExecutor.addCommand(
                 "set_delay",
                 [&](vector<string> data) -> bool {
-                    long delay = -1;
-                    if (data.size() >= 2) {
-                        delay = atol(data[1].c_str());
-                        if (delay == 0) {
-                            cout << "!> Invalid argument [" << data[1] << "] in function <set_delay>." << endl;
-                            return false;
-                        }
-                    }
-
-                    if (data.size() >= 1) {
-                        if (data[0].compare("mouse") == 0) {
-                            cout << "Setting default delay to " << delay << "us." << endl;
-                            virtualMouse.setDelay(delay);
-                            return true;
-                        }
-                    }
-                    return false;
+                    virtualMouse.setDelay(get_uint(data));
+                    return true;
                 }
         );
-
         commandExecutor.addCommand(
                 "mouse_left",
                 [&] (vector<string> data) -> bool {
-                    uint count = 1;
-                    long delay = -1;
-                    if(data.size() >= 2) {
-                        delay = atol (data[1].c_str());
-                        if(delay == 0) {
-                            cout << "!> Cannot parse [" << data[1] << "] as valid integer." << endl;
-                            return false;
-                        }
-                    }
-                    if(data.size() >= 1) {
-                        count = (uint) atoi(data[0].c_str());
-                        if(count == 0) {
-                            cout << "!> Cannot parse [" << data[0] << "] as valid integer." << endl;
-                            return false;
-                        }
-                    }
-                    for(int i = 0; i < count; ++i) {
-                        virtualMouse.click(BTN_LEFT, delay);
-                        cout << "Performing left click." << endl;
-                    }
-                    return true;
+                    return mouse_click(data, virtualMouse, BTN_LEFT);
+                }
+        );
+        commandExecutor.addCommand(
+                "mouse_right",
+                [&] (vector<string> data) -> bool {
+                    return mouse_click(data, virtualMouse, BTN_RIGHT);
+                }
+        );
+        commandExecutor.addCommand(
+                "mouse_middle",
+                [&] (vector<string> data) -> bool {
+                    return mouse_click(data, virtualMouse, BTN_MIDDLE);
+                }
+        );
+        commandExecutor.addCommand(
+                "mouse_move",
+                [&] (vector<string> data) -> bool {
+                    return mouse_move(data, virtualMouse);
+                }
+        );
+        commandExecutor.addCommand(
+                "scroll",
+                [&] (vector<string> data) -> bool {
+                    return mouse_scroll(data, virtualMouse);
                 }
         );
     }

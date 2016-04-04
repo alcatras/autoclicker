@@ -25,7 +25,7 @@ public:
 
     void addCommand(string name, function<bool(vector<string>)> callback);
 
-    bool parseCommand(string line);
+    bool parseCommand(vector<string> data);
 
     void run();
 

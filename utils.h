@@ -1,3 +1,7 @@
+
+#ifndef AUTOCLICKER_UTILS_H
+#define AUTOCLICKER_UTILS_H
+
 #include <iostream>
 
 using namespace std;
@@ -32,3 +36,5 @@ int screenWidth() {
 int screenHeight() {
     return getRootWindowInfo("Height: ");
 }
+
+#endif

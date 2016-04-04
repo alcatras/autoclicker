@@ -27,26 +27,19 @@ void CommandExecutor::run() {
     }
 }
 
-bool CommandExecutor::parseCommand(string line) {
-    if(line.empty()) {
+bool CommandExecutor::parseCommand(vector<string> data) {
+    if(data.empty()) {
         return true;
     }
 
-    stringstream ss(line);
-    string cmd, tmp;
-    vector<string> data;
-
-    ss >> cmd;
-    while(!ss.eof()) {
-        ss >> tmp;
-        data.push_back(tmp);
-    }
+    string cmd = data[0];
+    data.erase(data.begin());
 
     for(vector<struct command>::iterator it = template_commands.begin(); it != template_commands.end(); ++it) {
         if(it->name.compare(cmd) == 0) {
             struct execution_command command;
             command.id = it->id;
-            command.data = data;
+            command.data = vector<string>(data);
             execution_commands.push_back(command);
             return true;
         }

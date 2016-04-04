@@ -40,13 +40,6 @@ bool VirtualMouse::create() {
     if (!_eioctl(ioctl(fileDescriptor, UI_SET_RELBIT, REL_WHEEL)))
         return false;
 
-    if (!_eioctl(ioctl(fileDescriptor, UI_SET_EVBIT, EV_ABS)))
-        return false;
-    if (!_eioctl(ioctl(fileDescriptor, UI_SET_ABSBIT, ABS_X)))
-        return false;
-    if (!_eioctl(ioctl(fileDescriptor, UI_SET_ABSBIT, ABS_Y)))
-        return false;
-
     if (!_eioctl(ioctl(fileDescriptor, UI_SET_EVBIT, EV_SYN)))
         return false;
 
@@ -56,11 +49,6 @@ bool VirtualMouse::create() {
     userDevice.id.vendor = 0x1F;
     userDevice.id.product = 0x1E;
     userDevice.id.version = 0;
-
-    userDevice.absmin[ABS_X] = 0;
-    userDevice.absmax[ABS_X] = xres - 1;
-    userDevice.absmin[ABS_Y] = 0;
-    userDevice.absmax[ABS_Y] = yres - 1;
 
     if (!_ewrite(write(fileDescriptor, &userDevice, sizeof(userDevice)))) {
         return false;
@@ -90,10 +78,10 @@ bool VirtualMouse::destroy() {
 bool VirtualMouse::move(int x, int y, long delay) {
     bool status = true;
     if (x != 0) {
-        status = status && sendEvent(EV_REL, REL_X, x, delay);
+        status = status && sendEvent(EV_REL, REL_X, x, 0);
     }
     if (y != 0 && status) {
-        status = status && sendEvent(EV_REL, REL_Y, y, delay);
+        status = status && sendEvent(EV_REL, REL_Y, y, 0);
     }
 
     if (status) {
@@ -103,28 +91,22 @@ bool VirtualMouse::move(int x, int y, long delay) {
 }
 
 bool VirtualMouse::click(__u16 button, long delay) {
-    return sendEvent(EV_KEY, button, 1, delay) &&
-           sendEvent(EV_KEY, button, 0, delay) &&
+    return sendEvent(EV_KEY, button, 1, 0) &&
+           sendEvent(EV_KEY, button, 0, 0) &&
            sendEvent(EV_SYN, SYN_REPORT, 0, delay);
 }
 
 bool VirtualMouse::press(__u16 button, long delay) {
-    return sendEvent(EV_KEY, button, 1, delay) &&
+    return sendEvent(EV_KEY, button, 1, 0) &&
            sendEvent(EV_SYN, SYN_REPORT, 0, delay);
 }
 
 bool VirtualMouse::release(__u16 button, long delay) {
-    return sendEvent(EV_KEY, button, 0, delay) &&
+    return sendEvent(EV_KEY, button, 0, 0) &&
            sendEvent(EV_SYN, SYN_REPORT, 0, delay);
 }
 
-bool VirtualMouse::setPosition(int x, int y, long delay) {
-    x = max(x, 0);
-    x = min(x, yres - 1);
-    y = max(y, 0);
-    y = min(y, yres - 1);
-
-    return sendEvent(EV_ABS, ABS_X, x, delay) &&
-           sendEvent(EV_ABS, ABS_Y, y, delay) &&
+bool VirtualMouse::scroll(int amount, long delay) {
+    return sendEvent(EV_REL, REL_WHEEL, amount, 0) &&
            sendEvent(EV_SYN, SYN_REPORT, 0, delay);
 }

@@ -47,7 +47,7 @@ void ArgParser::parse(int argc, const char **argv) {
                 evaluate(current_option, current_data);
                 current_data.clear();
             }
-            current_option = current_argument.substr(current_argument[1] == '-' ? 2 : 1);
+            current_option = current_argument.substr((current_argument[1] == '-') ? 2 : 1);
         } else {
             current_data.push_back(current_argument);
         }
