@@ -55,7 +55,7 @@ bool VirtualMouse::create() {
     if (!_eioctl(ioctl(fileDescriptor, UI_DEV_CREATE)))
         return false;
 
-    sleep(2);
+    sleep(1);
 
     return fileDescriptor > 0;
 }
@@ -66,7 +66,7 @@ bool VirtualMouse::destroy() {
         return false;
     }
 
-    sleep(2);
+    sleep(1);
 
     if (!_eioctl(ioctl(fileDescriptor, UI_DEV_DESTROY)))
         return false;

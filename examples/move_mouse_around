@@ -1,0 +1,5 @@
+set_delay mouse 1000000
+mouse_move 100 0
+mouse_move 0 100
+mouse_move -100 0
+mouse_move 0 -100
