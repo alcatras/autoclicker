@@ -107,6 +107,7 @@ public:
  *  mouse_middle [count = 1]  [delay = default_delay]
  *
  *  mouse_move   [x] [y]  [delay = default_delay]
+ *  mouse_reset  [delay = default_delay]
  *  mouse_scroll [amount] [delay = default_delay]
  */
     void setup_executor() {
@@ -139,6 +140,12 @@ public:
                 "mouse_move",
                 [&](vector<string> data) -> bool {
                     return mouse_move(data, virtualMouse);
+                }
+        );
+        commandExecutor.addCommand(
+                "mouse_reset",
+                [&](vector<string> data) -> bool {
+                    return mouse_reset(data, virtualMouse);
                 }
         );
         commandExecutor.addCommand(

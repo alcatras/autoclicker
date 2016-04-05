@@ -89,19 +89,18 @@ bool VirtualMouse::move(int x, int y, long delay) {
     return status;
 }
 
+bool VirtualMouse::reset_position(long delay) {
+    return move(-xres, -yres, delay);
+}
+
 bool VirtualMouse::click(__u16 button, long delay) {
     return sendEvent(EV_KEY, button, 1, 0) &&
            sendEvent(EV_KEY, button, 0, 0) &&
            sendEvent(EV_SYN, SYN_REPORT, 0, delay);
 }
 
-bool VirtualMouse::press(__u16 button, long delay) {
-    return sendEvent(EV_KEY, button, 1, 0) &&
-           sendEvent(EV_SYN, SYN_REPORT, 0, delay);
-}
-
-bool VirtualMouse::release(__u16 button, long delay) {
-    return sendEvent(EV_KEY, button, 0, 0) &&
+bool VirtualMouse::state(__u16 button, __u16 state, long delay) {
+    return sendEvent(EV_KEY, button, 1, state) &&
            sendEvent(EV_SYN, SYN_REPORT, 0, delay);
 }
 

@@ -17,11 +17,11 @@ public:
 
     bool move(int x, int y, long delay = -1);
 
+    bool reset_position(long delay);
+
     bool click(__u16 button, long delay = -1);
 
-    bool press(__u16 button, long delay = -1);
-
-    bool release(__u16 button, long delay = -1);
+    bool state(__u16 button, __u16 state, long delay = -1);
 
     bool scroll(int amount, long delay = -1);
 

@@ -10,7 +10,9 @@ using namespace std;
 
 long get_uint(vector<string> data);
 
-bool mouse_move(vector<string> data, VirtualMouse virtualMouse);
+bool mouse_move(vector<string> data, VirtualMouse &virtualMouse);
+
+bool mouse_reset(vector<string> data, VirtualMouse &virtualMouse);
 
 bool mouse_click(vector<string> data, VirtualMouse &virtualMouse, __uint16_t button);
 

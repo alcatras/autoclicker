@@ -1,0 +1,3 @@
+set_delay mouse 50000
+mouse_reset
+mouse_move 100 100
