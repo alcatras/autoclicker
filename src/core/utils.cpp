@@ -8,7 +8,7 @@ int getRootWindowInfo(string grep) {
 
     fp = popen(("xwininfo -root | grep \"" + grep + "\"").c_str(), "r");
     if (fp == NULL) {
-        cout << ">>Failed to run a command." << endl;
+        printf("Failed to run a command.\n");
         exit(EXIT_FAILURE);
     }
 

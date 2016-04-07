@@ -16,16 +16,16 @@ void ArgParser::addOption(string shortName, string verboseName, string helpText,
 }
 
 void ArgParser::showHelp() {
-    cout << "========================================" << endl << name << endl << "usage: " <<
-    commandName << " " << baseUsage << endl << "========================================" << endl << endl;
+    printf("========================================\n%s\nusage: %s %s\n========================================\n\n",
+    name.c_str(), commandName.c_str(), baseUsage.c_str());
 
     for (int i = 0; i < options.size(); ++i) {
         struct Option currentArgument = options[i];
-        cout << "option:" << endl << "\t-" << currentArgument.shortName << ", --" << currentArgument.verboseName <<
-        endl << "\t\t" << currentArgument.helpText << endl << "\t\tusage: " << currentArgument.shortName << " " <<
-        currentArgument.argumentsTemplate << endl;
+        printf("option:\n\t-%s, --%s\n\t\t%s\n\t\tusage: %s %s\n",
+        currentArgument.shortName.c_str(), currentArgument.verboseName.c_str(), currentArgument.helpText.c_str(),
+               currentArgument.shortName.c_str(), currentArgument.argumentsTemplate.c_str());
     }
-    cout.flush();
+    fflush(stdout);
 }
 
 void ArgParser::parse(int argc, const char **argv) {
@@ -59,11 +59,11 @@ void ArgParser::evaluate(string option, vector<string> data) {
 
         if (option.compare(currentOption.shortName) == 0 || option.compare(currentOption.verboseName) == 0) {
             if (!currentOption.callback(data)) {
-                cout << "Option <" << option << "> with arguments: [ ";
+                printf("Option <%s> with arguments: [ ", option.c_str());
                 for (int j = 0; j < data.size(); ++j) {
-                    cout << data[j] << " ";
+                    printf("%s ", data[j].c_str());
                 }
-                cout << "] failed." << endl;
+                printf("] failed.\n");
                 exit(EXIT_FAILURE);
             }
             return;

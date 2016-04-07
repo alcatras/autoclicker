@@ -8,7 +8,7 @@ bool VirtualMouse::create() {
     for (int i = 0; i < sizeof(UINPUT_DIRS); ++i) {
         (fileDescriptor = open(UINPUT_DIRS[i], O_WRONLY));
         if (fileDescriptor > 0) {
-            printf("Opening virtual device at: %s", UINPUT_DIRS[i]);
+            printf("Detected uinput file at: %s.\n", UINPUT_DIRS[i]);
             break;
         }
     }

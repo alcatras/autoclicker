@@ -1,7 +1,6 @@
 #ifndef AUTOCLICKER_UTILS_H
 #define AUTOCLICKER_UTILS_H
 
-#include <iostream>
 #include <sstream>
 #include <memory>
 #include <string.h>

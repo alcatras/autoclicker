@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <iostream>
 #include <sstream>
 #include <fstream>
 #include "cli/ArgParser.h"
@@ -52,7 +51,7 @@ public:
                         ifstream file;
                         file.open(data[i]);
                         if (file.is_open()) {
-                            cout << "Reading file: " << data[i] << endl;
+                            printf("Reading file: %s.\n", data[i].c_str());
                             while (getline(file, line)) {
                                 stringstream ss(line);
                                 vector<string> _data;
@@ -62,13 +61,13 @@ public:
                                     _data.push_back(tmp);
                                 }
                                 if (!commandExecutor.parseCommand(_data)) {
-                                    cout << "Error parsing command: " << line << endl;
+                                    printf("Error parsing command: %s.\n", line.c_str());
                                     exit(EXIT_FAILURE);
                                 }
                             }
                             file.close();
                         } else {
-                            cout << "Cannot open file: " << data[i] << endl;
+                            printf("Cannot open file: %s.\n", data[i].c_str());
                             exit(EXIT_FAILURE);
                         }
                     }
@@ -83,7 +82,7 @@ public:
                 "[command1] [arguments1]",
                 [&](vector<string> data) -> bool {
                     if (!commandExecutor.parseCommand(data)) {
-                        cout << "Error parsing command: " << data[0] << endl;
+                        printf("Error parsing command: %s.\n", data[0].c_str());
                         exit(EXIT_FAILURE);
                     }
 
@@ -153,13 +152,13 @@ int main(int argc, const char **argv) {
     mainClass.setup_options(argv[0]);
     mainClass.setup_executor();
 
-    cout << "Initializing virtual devices." << endl;
+    printf("Initializing virtual devices.\n");
     mainClass.create();
 
-    cout << "Parsing input." << endl;
+    printf("Parsing input.\n");
     mainClass.parse(argc, argv);
 
-    cout << "Destroying virtual devices." << endl;
+    printf("Destroying virtual devices.\n");
     mainClass.destroy();
 
     exit(EXIT_SUCCESS);
