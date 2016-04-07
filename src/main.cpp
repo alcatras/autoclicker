@@ -5,7 +5,6 @@
 #include "cli/ArgParser.h"
 #include "core/dev/VirtualMouse.h"
 #include "core/CommandExecutor.h"
-#include "core/utils.h"
 #include "core/commands.h"
 
 using namespace std;
@@ -26,10 +25,6 @@ public:
         argParser.parse(argc, argv);
     }
 
-    void run() {
-        commandExecutor.run();
-    }
-
     void setup_options(string appName) {
         argParser.setName("Mouse emulator.");
         argParser.setCommandName(appName);
@@ -41,7 +36,7 @@ public:
                 "Shows this help page.",
                 "",
                 [&](vector<string>) -> bool {
-                    argParser.show_help();
+                    argParser.showHelp();
                     exit(EXIT_SUCCESS);
                 }
         );
@@ -57,7 +52,7 @@ public:
                         ifstream file;
                         file.open(data[i]);
                         if (file.is_open()) {
-                            cout << "> Reading file: " << data[i] << endl;
+                            cout << "Reading file: " << data[i] << endl;
                             while (getline(file, line)) {
                                 stringstream ss(line);
                                 vector<string> _data;
@@ -67,13 +62,13 @@ public:
                                     _data.push_back(tmp);
                                 }
                                 if (!commandExecutor.parseCommand(_data)) {
-                                    cout << "!> Error parsing command: " << line << endl;
+                                    cout << "Error parsing command: " << line << endl;
                                     exit(EXIT_FAILURE);
                                 }
                             }
                             file.close();
                         } else {
-                            cout << "!> Cannot open file: " << data[i] << endl;
+                            cout << "Cannot open file: " << data[i] << endl;
                             exit(EXIT_FAILURE);
                         }
                     }
@@ -88,7 +83,7 @@ public:
                 "[command1] [arguments1]",
                 [&](vector<string> data) -> bool {
                     if (!commandExecutor.parseCommand(data)) {
-                        cout << "!> Error parsing command: " << data[0] << endl;
+                        cout << "Error parsing command: " << data[0] << endl;
                         exit(EXIT_FAILURE);
                     }
 
@@ -97,24 +92,14 @@ public:
         );
     }
 
-/*
- * setup commands:
- *  set_delay [device] [default_delay]
- *
- * mouse commands:
- *  mouse_left   [count = 1]  [delay = default_delay]
- *  mouse_right  [count = 1]  [delay = default_delay]
- *  mouse_middle [count = 1]  [delay = default_delay]
- *
- *  mouse_move   [x] [y]  [delay = default_delay]
- *  mouse_reset  [delay = default_delay]
- *  mouse_scroll [amount] [delay = default_delay]
- */
     void setup_executor() {
         commandExecutor.addCommand(
                 "set_delay",
                 [&](vector<string> data) -> bool {
-                    virtualMouse.setDelay(get_uint(data));
+                    auto result = get_int_property(data);
+                    if(result.first.compare("mouse") == 0) {
+                        virtualMouse.setDelay(result.second);
+                    }
                     return true;
                 }
         );
@@ -168,15 +153,13 @@ int main(int argc, const char **argv) {
     mainClass.setup_options(argv[0]);
     mainClass.setup_executor();
 
-    cout << "> Parsing input." << endl;
-    mainClass.parse(argc, argv);
-
-    cout << "> Initializing virtual devices." << endl;
+    cout << "Initializing virtual devices." << endl;
     mainClass.create();
 
-    mainClass.run();
+    cout << "Parsing input." << endl;
+    mainClass.parse(argc, argv);
 
-    cout << "> Destroying virtual devices." << endl;
+    cout << "Destroying virtual devices." << endl;
     mainClass.destroy();
 
     exit(EXIT_SUCCESS);

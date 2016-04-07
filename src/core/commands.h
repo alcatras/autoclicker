@@ -1,20 +1,27 @@
-#ifndef AUTOCLICKER_COMMANDS_H
-#define AUTOCLICKER_COMMANDS_H
+#ifndef COMMANDS_H
+#define COMMANDS_H
+
+#include <stdexcept>
+#include <vector>
 
 #include "dev/VirtualMouse.h"
-#include <vector>
-#include <string>
-#include <iostream>
 
 using namespace std;
 
-long get_uint(vector<string> data);
+class InvalidNumberOfArguments : logic_error {
+public:
+    InvalidNumberOfArguments(string msg) : logic_error(msg.c_str()) {}
+};
 
-bool mouse_move(vector<string> data, VirtualMouse &virtualMouse);
+pair<string, string> get_property(vector<string> data);
+
+pair<string, int> get_int_property(vector<string> data);
+
+bool mouse_move(vector<string> data, VirtualMouse& virtualMouse);
 
 bool mouse_reset(vector<string> data, VirtualMouse &virtualMouse);
 
-bool mouse_click(vector<string> data, VirtualMouse &virtualMouse, __uint16_t button);
+bool mouse_click(vector<string> data, VirtualMouse &virtualMouse, __u16 button);
 
 bool mouse_scroll(vector<string> data, VirtualMouse &virtualMouse);
 

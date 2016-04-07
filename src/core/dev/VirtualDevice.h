@@ -11,12 +11,15 @@
 #include <linux/input.h>
 #include <linux/uinput.h>
 #include <sys/syslog.h>
+#include <string.h>
+
+#include "../utils.h"
 
 static const char *UINPUT_DIRS[] = {"/dev/uinput", "dev/input/uinput", "dev/misc/uinput"};
 
 class VirtualDevice {
 public:
-    VirtualDevice() : default_delay(100000) { }
+    VirtualDevice() : defaultDelay(100000), delay(0) { }
 
     ~VirtualDevice() {
         if (fileDescriptor > 0)
@@ -29,22 +32,27 @@ public:
 
     void setDelay(long delay) {
         if (delay > 0)
-            default_delay = (__useconds_t) delay;
+            defaultDelay = (__useconds_t) delay;
     }
 
 protected:
     int fileDescriptor;
     struct input_event inputEvent;
 
-    __useconds_t default_delay;
+    __useconds_t defaultDelay;
 
-    bool _eioctl(int status);
+    void tryIoctlOrExit(int __fd, unsigned long int __request);
 
-    bool _ewrite(ssize_t status);
+    void tryIoctlOrExit(int __fd, unsigned long int __request, int extra);
 
-    bool _eclose(int status);
+    void tryWriteOrExit(int __fd, const void *__buf, size_t __n);
 
-    bool sendEvent(__u16 type, __u16 code, __s32 value, long delay = -1);
+    void tryCloseOrExit(int __fd);
+
+    bool sendEvent(__u16 type, __u16 code, __s32 value, long custom_delay = -1);
+
+private:
+    __useconds_t delay;
 };
 
 

@@ -2,38 +2,43 @@
 // Created by kamil on 31.03.16.
 //
 
-#include <string.h>
 #include "VirtualDevice.h"
 
-bool VirtualDevice::_eioctl(int status) {
-    if (status < 0) {
-        perror("Error occurred when trying to configure ioctl.");
-        return false;
+void VirtualDevice::tryIoctlOrExit(int __fd, unsigned long int __request) {
+    if (ioctl(__fd, __request, NULL) < 0) {
+        printf("Error occurred when trying to call ioctl.");
+        exit(EXIT_FAILURE);
     }
-    return true;
 }
 
-bool VirtualDevice::_ewrite(ssize_t status) {
-    if (status < sizeof(struct input_event)) {
+void VirtualDevice::tryIoctlOrExit(int __fd, unsigned long int __request, int extra) {
+    if (ioctl(__fd, __request, extra) < 0) {
+        perror("Error occurred when trying to call ioctl.");
+        exit(EXIT_FAILURE);
+    }
+}
+
+void VirtualDevice::tryWriteOrExit(int __fd, const void *__buf, size_t __n) {
+    if (write(__fd, __buf, __n) < __n) {
         perror("Error occurred when trying to write to file.");
-        return false;
+        exit(EXIT_FAILURE);
     }
-    return true;
 }
 
-bool VirtualDevice::_eclose(int status) {
-    if (status < 0) {
+void VirtualDevice::tryCloseOrExit(int __fd) {
+    if (close(__fd) < 0) {
         perror("Error occurred when trying to destroy device.");
-        return false;
+        exit(EXIT_FAILURE);
     }
-    return true;
 }
 
-bool VirtualDevice::sendEvent(__u16 type, __u16 code, __s32 value, long delay) {
+bool VirtualDevice::sendEvent(__u16 type, __u16 code, __s32 value, long custom_delay) {
     if (fileDescriptor < 0) {
-        perror("Can't send event from uninitialized device.");
+        perror("Cannot send event from uninitialized device.");
         return false;
     }
+
+    usleep(delay);
 
     memset(&inputEvent, 0, sizeof(struct input_event));
     inputEvent.type = type;
@@ -42,13 +47,13 @@ bool VirtualDevice::sendEvent(__u16 type, __u16 code, __s32 value, long delay) {
 
     long bytes = write(fileDescriptor, &inputEvent, sizeof(struct input_event));
 
-    if (!_ewrite(bytes)) {
+    if (bytes < sizeof(struct input_event)) {
         return false;
     }
 
-    if (delay == -1)
-        usleep(default_delay);
+    if (custom_delay == -1)
+        delay = defaultDelay;
     else
-        usleep((__useconds_t) delay);
+        delay = (__useconds_t) custom_delay;
     return true;
 }

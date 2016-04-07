@@ -8,34 +8,26 @@
 #include <string>
 #include <functional>
 #include <vector>
+#include <sstream>
 
 using namespace std;
 
 class CommandExecutor {
 public:
-    struct command {
-        ulong id;
+    struct Command {
         string name;
         function<bool(vector<string> data)> callback;
     };
 
-    CommandExecutor() : template_commands(), execution_commands() { }
+    CommandExecutor() : template_commands() { }
 
-    void addCommand(struct command &cmd);
+    void addCommand(struct Command &cmd);
 
     void addCommand(string name, function<bool(vector<string>)> callback);
 
     bool parseCommand(vector<string> data);
-
-    void run();
-
 private:
-    struct execution_command {
-        ulong id;
-        vector<string> data;
-    };
-    vector<struct command> template_commands;
-    vector<struct execution_command> execution_commands;
+    vector<struct Command> template_commands;
 };
 
 

@@ -5,11 +5,13 @@
 #ifndef AUTOCLICKER_VIRTUALMOUSE_H
 #define AUTOCLICKER_VIRTUALMOUSE_H
 
+#include <string.h>
+
 #include "VirtualDevice.h"
 
 class VirtualMouse : public VirtualDevice {
 public:
-    VirtualMouse(int xrel, int yrel);
+    VirtualMouse(int resX, int resY) : resX(resX), resY(resY) { }
 
     bool create() override;
 
@@ -26,8 +28,8 @@ public:
     bool scroll(int amount, long delay = -1);
 
 private:
-    int xres;
-    int yres;
+    int resX;
+    int resY;
 
     struct uinput_user_dev userDevice;
 };

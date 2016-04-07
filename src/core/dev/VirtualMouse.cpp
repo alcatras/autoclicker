@@ -2,45 +2,36 @@
 // Created by kamil on 31.03.16.
 //
 
-#include <string.h>
 #include "VirtualMouse.h"
-
-VirtualMouse::VirtualMouse(int xres, int yres) : xres(xres), yres(yres) {
-}
 
 bool VirtualMouse::create() {
     for (int i = 0; i < sizeof(UINPUT_DIRS); ++i) {
         (fileDescriptor = open(UINPUT_DIRS[i], O_WRONLY));
         if (fileDescriptor > 0) {
+            printf("Opening virtual device at: %s", UINPUT_DIRS[i]);
             break;
         }
     }
 
     if (fileDescriptor < 0) {
-        perror("Can't open uinput descriptor.");
-        return false;
+        printf("Can't open uinput file descriptor. Do you have uinput module installed?");
+        exit(EXIT_FAILURE);
     }
 
-    if (!_eioctl(ioctl(fileDescriptor, UI_SET_EVBIT, EV_KEY)))
-        return false;
-    if (!_eioctl(ioctl(fileDescriptor, UI_SET_KEYBIT, BTN_LEFT)))
-        return false;
-    if (!_eioctl(ioctl(fileDescriptor, UI_SET_KEYBIT, BTN_RIGHT)))
-        return false;
-    if (!_eioctl(ioctl(fileDescriptor, UI_SET_KEYBIT, BTN_MIDDLE)))
-        return false;
+    // Enable mouse buttons events
+    tryIoctlOrExit(fileDescriptor, UI_SET_EVBIT, EV_KEY);
+    tryIoctlOrExit(fileDescriptor, UI_SET_KEYBIT, BTN_LEFT);
+    tryIoctlOrExit(fileDescriptor, UI_SET_KEYBIT, BTN_RIGHT);
+    tryIoctlOrExit(fileDescriptor, UI_SET_KEYBIT, BTN_MIDDLE);
 
-    if (!_eioctl(ioctl(fileDescriptor, UI_SET_EVBIT, EV_REL)))
-        return false;
-    if (!_eioctl(ioctl(fileDescriptor, UI_SET_RELBIT, REL_X)))
-        return false;
-    if (!_eioctl(ioctl(fileDescriptor, UI_SET_RELBIT, REL_Y)))
-        return false;
-    if (!_eioctl(ioctl(fileDescriptor, UI_SET_RELBIT, REL_WHEEL)))
-        return false;
+    // Enable mouse relative movement
+    tryIoctlOrExit(fileDescriptor, UI_SET_EVBIT, EV_REL);
+    tryIoctlOrExit(fileDescriptor, UI_SET_RELBIT, REL_X);
+    tryIoctlOrExit(fileDescriptor, UI_SET_RELBIT, REL_Y);
+    tryIoctlOrExit(fileDescriptor, UI_SET_RELBIT, REL_WHEEL);
 
-    if (!_eioctl(ioctl(fileDescriptor, UI_SET_EVBIT, EV_SYN)))
-        return false;
+    // Enable sync event
+    tryIoctlOrExit(fileDescriptor, UI_SET_EVBIT, EV_SYN);
 
     memset(&userDevice, 0, sizeof(userDevice));
     snprintf(userDevice.name, UINPUT_MAX_NAME_SIZE, "Auto clicker Virtual Mouse");
@@ -49,11 +40,8 @@ bool VirtualMouse::create() {
     userDevice.id.product = 0x1E;
     userDevice.id.version = 0;
 
-    if (!_ewrite(write(fileDescriptor, &userDevice, sizeof(userDevice)))) {
-        return false;
-    }
-    if (!_eioctl(ioctl(fileDescriptor, UI_DEV_CREATE)))
-        return false;
+    tryWriteOrExit(fileDescriptor, &userDevice, sizeof(userDevice));
+    tryIoctlOrExit(fileDescriptor, UI_DEV_CREATE, 0);
 
     sleep(1);
 
@@ -68,10 +56,10 @@ bool VirtualMouse::destroy() {
 
     sleep(1);
 
-    if (!_eioctl(ioctl(fileDescriptor, UI_DEV_DESTROY)))
-        return false;
-
-    return _eclose(close(fileDescriptor));
+    tryIoctlOrExit(fileDescriptor, UI_DEV_DESTROY, 0);
+    tryCloseOrExit(fileDescriptor);
+    
+    return true;
 }
 
 bool VirtualMouse::move(int x, int y, long delay) {
@@ -90,7 +78,7 @@ bool VirtualMouse::move(int x, int y, long delay) {
 }
 
 bool VirtualMouse::reset_position(long delay) {
-    return move(-xres, -yres, delay);
+    return move(-resX, -resY, delay);
 }
 
 bool VirtualMouse::click(__u16 button, long delay) {

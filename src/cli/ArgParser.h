@@ -8,26 +8,33 @@
 #include <vector>
 #include <functional>
 #include <string>
+#include <stdlib.h>
+#include <iostream>
 
 using namespace std;
 
 class ArgParser {
 public:
-    struct option {
-        string short_name;
-        string verbose_name;
-        string help_text;
-        string argt;
+    class OptionNotSupported : logic_error {
+    public:
+        OptionNotSupported(const char* msg) : logic_error(msg) { }
+    };
+
+    struct Option {
+        string shortName;
+        string verboseName;
+        string helpText;
+        string argumentsTemplate;
         function<bool(vector<string>)> callback;
     };
 
     ArgParser() : options() { }
 
-    void addOption(struct option &argument) {
+    void addOption(struct Option &argument) {
         options.push_back(argument);
     }
 
-    void addOption(string short_name, string verbose_name, string help_text, string argt,
+    void addOption(string shortName, string verboseName, string helpText, string argumentsTemplate,
                    function<bool(vector<string>)> callback);
 
     void setName(string summary) {
@@ -35,22 +42,22 @@ public:
     }
 
     void setCommandName(string command) {
-        this->command_name = command;
+        this->commandName = command;
     }
 
     void setBaseUsage(string usage) {
-        this->base_usage = usage;
+        this->baseUsage = usage;
     }
 
-    void show_help();
+    void showHelp();
 
     void parse(int argc, const char **argv);
 
 private:
-    std::vector<option> options;
+    std::vector<Option> options;
     string name;
-    string command_name;
-    string base_usage;
+    string commandName;
+    string baseUsage;
 
     void evaluate(string option, vector<string> data);
 };
